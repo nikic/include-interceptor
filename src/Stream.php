@@ -33,7 +33,7 @@ class Stream {
 	 */
 	public $resource;
 
-	public function stream_open($path, $mode, $options, &$openedPath) {
+	public function stream_open($path, $mode, $options) {
 		$this->interceptor = self::$defaultInterceptor;
 		$this->interceptor->unwrap();
 		$including = (bool)($options & self::STREAM_OPEN_FOR_INCLUDE);
@@ -107,7 +107,7 @@ class Stream {
 		return true;
 	}
 
-	public function dir_opendir($path, $options) {
+	public function dir_opendir($path) {
 		$this->interceptor->unwrap();
 		if (isset($this->context)) {
 			$this->resource = opendir($path, $this->context);
@@ -149,7 +149,7 @@ class Stream {
 		return $result;
 	}
 
-	public function rmdir($path, $options) {
+	public function rmdir($path) {
 		$this->interceptor->unwrap();
 		if (isset($this->context)) {
 			$result = rmdir($path, $this->context);
@@ -160,7 +160,7 @@ class Stream {
 		return $result;
 	}
 
-	public function stream_cast($cast_as) {
+	public function stream_cast() {
 		return $this->resource;
 	}
 
