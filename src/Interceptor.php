@@ -22,7 +22,7 @@ class Interceptor {
 	}
 
 	public function shouldIntercept($path) {
-		return $this->isValidExtension($path) and $this->isWhiteListed($path);
+		return $this->isValidExtension($path) && $this->isWhiteListed($path);
 	}
 
 	private function isValidExtension($path) {

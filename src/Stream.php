@@ -73,7 +73,7 @@ class Stream {
 
 	public function stream_stat() {
 		$result = fstat($this->resource);
-		if ($result) {
+		if (!empty($result)) {
 			$result[self::STAT_MTIME_ASSOC_OFFSET]++;
 			$result[self::STAT_MTIME_NUMERIC_OFFSET]++;
 		}
@@ -95,7 +95,7 @@ class Stream {
 			restore_error_handler();
 		}
 		$this->interceptor->wrap();
-		if ($result) {
+		if (!empty($result)) {
 			$result[self::STAT_MTIME_ASSOC_OFFSET]++;
 			$result[self::STAT_MTIME_NUMERIC_OFFSET]++;
 		}
