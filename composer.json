@@ -1,0 +1,23 @@
+{
+	"name": "icewind/interceptor",
+	"description": "Intercept php includes",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Robin Appelman",
+			"email": "icewind@owncloud.com"
+		}
+	],
+	"require": {
+		"php": ">=5.4"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "4.8.*"
+	},
+	"autoload": {
+		"psr-4": {
+			"Icewind\\Interceptor\\Tests\\": "tests/",
+			"Icewind\\Interceptor\\": "src/"
+		}
+	}
+}
