@@ -9,8 +9,6 @@ namespace Icewind\Interceptor;
 
 class Stream {
 	const STREAM_OPEN_FOR_INCLUDE = 128;
-	const STAT_MTIME_NUMERIC_OFFSET = 9;
-	const STAT_MTIME_ASSOC_OFFSET = 'mtime';
 
 	private static $defaultInterceptor;
 
@@ -73,10 +71,6 @@ class Stream {
 
 	public function stream_stat() {
 		$result = fstat($this->resource);
-		if (!empty($result)) {
-			$result[self::STAT_MTIME_ASSOC_OFFSET]++;
-			$result[self::STAT_MTIME_NUMERIC_OFFSET]++;
-		}
 		return $result;
 	}
 
@@ -95,10 +89,6 @@ class Stream {
 			restore_error_handler();
 		}
 		$this->interceptor->wrap();
-		if (!empty($result)) {
-			$result[self::STAT_MTIME_ASSOC_OFFSET]++;
-			$result[self::STAT_MTIME_NUMERIC_OFFSET]++;
-		}
 		return $result;
 	}
 
@@ -108,6 +98,7 @@ class Stream {
 	}
 
 	public function dir_opendir($path) {
+		$this->interceptor = self::$defaultInterceptor;
 		$this->interceptor->unwrap();
 		if (isset($this->context)) {
 			$this->resource = opendir($path, $this->context);

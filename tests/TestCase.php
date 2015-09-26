@@ -8,14 +8,18 @@
 namespace Icewind\Interceptor\Tests;
 
 abstract class TestCase extends \PHPUnit_Framework_TestCase {
+	protected function tempNam($postFix = '') {
+		$id = uniqid();
+		return tempnam(sys_get_temp_dir(), $id . $postFix);
+	}
+
 	/**
 	 * @param resource $stream
 	 * @return callable
 	 * @throws \Exception
 	 */
 	protected function loadCode($stream) {
-		$id = uniqid();
-		$file = tempnam(sys_get_temp_dir(), $id . '.php');
+		$file = $this->tempNam('.php');
 		file_put_contents($file, $stream);
 		try {
 			$result = include $file;
