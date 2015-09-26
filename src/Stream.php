@@ -20,11 +20,6 @@ class Stream {
 	}
 
 	/**
-	 * @var Interceptor
-	 */
-	private $interceptor;
-
-	/**
 	 * @var resource
 	 */
 	public $context;
@@ -34,22 +29,31 @@ class Stream {
 	 */
 	public $resource;
 
+	/**
+	 * @param callable $callback
+	 * @return mixed
+	 */
+	private function runUnwrapped($callback) {
+		self::$defaultInterceptor->unwrap();
+		$result = $callback(self::$defaultInterceptor);
+		self::$defaultInterceptor->wrap();
+		return $result;
+	}
+
 	public function stream_open($path, $mode, $options) {
-		$this->interceptor = self::$defaultInterceptor;
-		$this->interceptor->unwrap();
-		$including = (bool)($options & self::STREAM_OPEN_FOR_INCLUDE);
-		if ($including && $this->interceptor->shouldIntercept($path)) {
-			$this->resource = $this->interceptor->intercept($path);
-			$this->interceptor->wrap();
-			return true;
-		}
-		if (isset($this->context)) {
-			$this->resource = fopen($path, $mode, $options, $this->context);
-		} else {
-			$this->resource = fopen($path, $mode, $options);
-		}
-		$this->interceptor->wrap();
-		return $this->resource !== false;
+		return $this->runUnwrapped(function (Interceptor $interceptor) use ($path, $mode, $options) {
+			$including = (bool)($options & self::STREAM_OPEN_FOR_INCLUDE);
+			if ($including && $interceptor->shouldIntercept($path)) {
+				$this->resource = $interceptor->intercept($path);
+				return true;
+			}
+			if (isset($this->context)) {
+				$this->resource = fopen($path, $mode, $options, $this->context);
+			} else {
+				$this->resource = fopen($path, $mode, $options);
+			}
+			return $this->resource !== false;
+		});
 	}
 
 	public function stream_close() {
@@ -73,8 +77,7 @@ class Stream {
 	}
 
 	public function stream_stat() {
-		$result = fstat($this->resource);
-		return $result;
+		return fstat($this->resource);
 	}
 
 	public function stream_tell() {
@@ -82,17 +85,17 @@ class Stream {
 	}
 
 	public function url_stat($path, $flags) {
-		$this->interceptor->unwrap();
-		if ($flags & STREAM_URL_STAT_QUIET) {
-			set_error_handler(function () {
-			});
-		}
-		$result = stat($path);
-		if ($flags & STREAM_URL_STAT_QUIET) {
-			restore_error_handler();
-		}
-		$this->interceptor->wrap();
-		return $result;
+		return $this->runUnwrapped(function () use ($path, $flags) {
+			if ($flags & STREAM_URL_STAT_QUIET) {
+				set_error_handler(function () {
+				});
+			}
+			$result = stat($path);
+			if ($flags & STREAM_URL_STAT_QUIET) {
+				restore_error_handler();
+			}
+			return $result;
+		});
 	}
 
 	public function dir_closedir() {
@@ -101,15 +104,14 @@ class Stream {
 	}
 
 	public function dir_opendir($path) {
-		$this->interceptor = self::$defaultInterceptor;
-		$this->interceptor->unwrap();
-		if (isset($this->context)) {
-			$this->resource = opendir($path, $this->context);
-		} else {
-			$this->resource = opendir($path);
-		}
-		$this->interceptor->wrap();
-		return $this->resource !== false;
+		return $this->runUnwrapped(function () use ($path) {
+			if (isset($this->context)) {
+				$this->resource = opendir($path, $this->context);
+			} else {
+				$this->resource = opendir($path);
+			}
+			return $this->resource !== false;
+		});
 	}
 
 	public function dir_readdir() {
@@ -122,36 +124,21 @@ class Stream {
 	}
 
 	public function mkdir($path, $mode, $options) {
-		self::$defaultInterceptor->unwrap();
-		if (isset($this->context)) {
-			$result = mkdir($path, $mode, $options, $this->context);
-		} else {
-			$result = mkdir($path, $mode, $options);
-		}
-		self::$defaultInterceptor->wrap();
-		return $result;
+		return $this->runUnwrapped(function () use ($path, $mode, $options) {
+			return mkdir($path, $mode, $options, $this->context);
+		});
 	}
 
-	public function rename($path_from, $path_to) {
-		self::$defaultInterceptor->unwrap();
-		if (isset($this->context)) {
-			$result = rename($path_from, $path_to, $this->context);
-		} else {
-			$result = rename($path_from, $path_to);
-		}
-		self::$defaultInterceptor->wrap();
-		return $result;
+	public function rename($pathFrom, $pathTo) {
+		return $this->runUnwrapped(function () use ($pathFrom, $pathTo) {
+			return rename($pathFrom, $pathTo, $this->context);
+		});
 	}
 
 	public function rmdir($path) {
-		self::$defaultInterceptor->unwrap();
-		if (isset($this->context)) {
-			$result = rmdir($path, $this->context);
-		} else {
-			$result = rmdir($path);
-		}
-		self::$defaultInterceptor->wrap();
-		return $result;
+		return $this->runUnwrapped(function () use ($path) {
+			return rmdir($path, $this->context);
+		});
 	}
 
 	public function stream_cast() {
@@ -182,42 +169,37 @@ class Stream {
 	}
 
 	public function unlink($path) {
-		self::$defaultInterceptor->unwrap();
-		if (isset($this->context)) {
-			$result = unlink($path, $this->context);
-		} else {
-			$result = unlink($path);
-		}
-		self::$defaultInterceptor->wrap();
-		return $result;
+		return $this->runUnwrapped(function () use ($path) {
+			return unlink($path, $this->context);
+		});
 	}
 
 	public function stream_metadata($path, $option, $value) {
-		self::$defaultInterceptor->unwrap();
-		switch ($option) {
-			case STREAM_META_TOUCH:
-				if (empty($value)) {
-					$result = touch($path);
-				} else {
-					$result = touch($path, $value[0], $value[1]);
-				}
-				break;
-			case STREAM_META_OWNER_NAME:
-			case STREAM_META_OWNER:
-				$result = chown($path, $value);
-				break;
-			case STREAM_META_GROUP_NAME:
-			case STREAM_META_GROUP:
-				$result = chgrp($path, $value);
-				break;
-			case STREAM_META_ACCESS:
-				$result = chmod($path, $value);
-				break;
-			default:
-				throw new \InvalidArgumentException();
-		}
-		self::$defaultInterceptor->wrap();
-		return $result;
+		return $this->runUnwrapped(function () use ($path, $option, $value) {
+			switch ($option) {
+				case STREAM_META_TOUCH:
+					if (empty($value)) {
+						$result = touch($path);
+					} else {
+						$result = touch($path, $value[0], $value[1]);
+					}
+					break;
+				case STREAM_META_OWNER_NAME:
+				case STREAM_META_OWNER:
+					$result = chown($path, $value);
+					break;
+				case STREAM_META_GROUP_NAME:
+				case STREAM_META_GROUP:
+					$result = chgrp($path, $value);
+					break;
+				case STREAM_META_ACCESS:
+					$result = chmod($path, $value);
+					break;
+				default:
+					throw new \InvalidArgumentException();
+			}
+			return $result;
+		});
 	}
 
 	public function stream_truncate($new_size) {
