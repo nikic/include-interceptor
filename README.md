@@ -1,9 +1,13 @@
 # Interceptor
 
+[![Build Status](https://travis-ci.org/icewind1991/interceptor.svg?branch=master)](https://travis-ci.org/icewind1991/interceptor)
+[![Code Coverage](https://scrutinizer-ci.com/g/icewind1991/interceptor/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/icewind1991/interceptor/?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/icewind1991/interceptor/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/icewind1991/interceptor/?branch=master)
+
 Intercept php includes
 
 ```
-composer require icewind/interceptor
+composer require cewind/interceptor
 ```
 
 ## Usage
