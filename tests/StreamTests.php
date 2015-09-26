@@ -124,4 +124,79 @@ class StreamTests extends TestCase {
 		rewinddir($wrapped);
 		$this->assertEquals($content[0], readdir($wrapped));
 	}
+
+	public function testUrlStat() {
+		$interceptor = new Interceptor();
+		Stream::setInterceptor($interceptor);
+		$expected = stat(__FILE__);
+		$interceptor->wrap();
+		$result = stat(__FILE__);
+		$interceptor->unwrap();
+		$this->assertEquals($expected, $result);
+	}
+
+	public function testMKDir() {
+		$interceptor = new Interceptor();
+		Stream::setInterceptor($interceptor);
+		$file = $this->tempNam();
+		unlink($file);
+		$interceptor->wrap();
+		mkdir($file);
+		$interceptor->unwrap();
+		$this->assertTrue(is_dir($file));
+		rmdir($file);
+	}
+
+	public function testRMDir() {
+		$interceptor = new Interceptor();
+		Stream::setInterceptor($interceptor);
+		$file = $this->tempNam();
+		unlink($file);
+		mkdir($file);
+		$interceptor->wrap();
+		rmdir($file);
+		$interceptor->unwrap();
+		$this->assertFalse(is_dir($file));
+	}
+
+	public function testRename() {
+		$interceptor = new Interceptor();
+		Stream::setInterceptor($interceptor);
+		$file1 = $this->tempNam();
+		$file2 = $this->tempNam();
+		unlink($file2);
+		$interceptor->wrap();
+		rename($file1, $file2);
+		$interceptor->unwrap();
+		$this->assertFalse(is_file($file1));
+		$this->assertTrue(is_file($file2));
+	}
+
+	public function testUnlink() {
+		$interceptor = new Interceptor();
+		Stream::setInterceptor($interceptor);
+		$file = $this->tempNam();
+		$interceptor->wrap();
+		unlink($file);
+		$interceptor->unwrap();
+		$this->assertFalse(is_file($file));
+	}
+
+	public function testTouch() {
+		$interceptor = new Interceptor();
+		Stream::setInterceptor($interceptor);
+		$file = $this->tempNam();
+		$interceptor->wrap();
+		$this->assertTrue(touch($file));
+		$interceptor->unwrap();
+	}
+
+	public function testChmod() {
+		$interceptor = new Interceptor();
+		Stream::setInterceptor($interceptor);
+		$file = $this->tempNam();
+		$interceptor->wrap();
+		$this->assertTrue(chmod($file, 0700));
+		$interceptor->unwrap();
+	}
 }

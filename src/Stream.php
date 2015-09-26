@@ -10,6 +10,9 @@ namespace Icewind\Interceptor;
 class Stream {
 	const STREAM_OPEN_FOR_INCLUDE = 128;
 
+	/**
+	 * @var Interceptor
+	 */
 	private static $defaultInterceptor;
 
 	public static function setInterceptor(Interceptor $interceptor) {
@@ -119,35 +122,35 @@ class Stream {
 	}
 
 	public function mkdir($path, $mode, $options) {
-		$this->interceptor->unwrap();
+		self::$defaultInterceptor->unwrap();
 		if (isset($this->context)) {
 			$result = mkdir($path, $mode, $options, $this->context);
 		} else {
 			$result = mkdir($path, $mode, $options);
 		}
-		$this->interceptor->wrap();
+		self::$defaultInterceptor->wrap();
 		return $result;
 	}
 
 	public function rename($path_from, $path_to) {
-		$this->interceptor->unwrap();
+		self::$defaultInterceptor->unwrap();
 		if (isset($this->context)) {
 			$result = rename($path_from, $path_to, $this->context);
 		} else {
 			$result = rename($path_from, $path_to);
 		}
-		$this->interceptor->wrap();
+		self::$defaultInterceptor->wrap();
 		return $result;
 	}
 
 	public function rmdir($path) {
-		$this->interceptor->unwrap();
+		self::$defaultInterceptor->unwrap();
 		if (isset($this->context)) {
 			$result = rmdir($path, $this->context);
 		} else {
 			$result = rmdir($path);
 		}
-		$this->interceptor->wrap();
+		self::$defaultInterceptor->wrap();
 		return $result;
 	}
 
@@ -179,18 +182,18 @@ class Stream {
 	}
 
 	public function unlink($path) {
-		$this->interceptor->unwrap();
+		self::$defaultInterceptor->unwrap();
 		if (isset($this->context)) {
 			$result = unlink($path, $this->context);
 		} else {
 			$result = unlink($path);
 		}
-		$this->interceptor->wrap();
+		self::$defaultInterceptor->wrap();
 		return $result;
 	}
 
 	public function stream_metadata($path, $option, $value) {
-		$this->interceptor->unwrap();
+		self::$defaultInterceptor->unwrap();
 		switch ($option) {
 			case STREAM_META_TOUCH:
 				if (empty($value)) {
@@ -213,7 +216,7 @@ class Stream {
 			default:
 				throw new \InvalidArgumentException();
 		}
-		$this->interceptor->wrap();
+		self::$defaultInterceptor->wrap();
 		return $result;
 	}
 
