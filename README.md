@@ -21,7 +21,7 @@ $interceptor->addHook(function($code) {
     return str_replace('foo', 'bar', $code);
 });
 
-$instance->setUp();
+$interceptor->setUp();
 
 require 'src/foo.php'
 ```
