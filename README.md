@@ -7,7 +7,7 @@
 Intercept php includes
 
 ```
-composer require cewind/interceptor
+composer require icewind/interceptor
 ```
 
 ## Usage
