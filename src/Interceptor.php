@@ -8,22 +8,40 @@
 namespace Icewind\Interceptor;
 
 class Interceptor {
+	/**
+	 * @var FileFilter
+	 */
+	private $filter;
+
 	private $protocols = ['file', 'phar'];
-	private $whiteList = [];
-	private $extensions = ['php', 'phar'];
 
 	/**
 	 * @var callable[]
 	 */
 	private $hooks = [];
 
+	public function __construct() {
+		$this->filter = new FileFilter();
+		$this->filter->addExtension('php');
+		$this->filter->addExtension('phar');
+	}
+
 	/**
-	 * Add a folder to the whitelist
+	 * Add a folder to the white list
 	 *
 	 * @param string $path
 	 */
 	public function addWhiteList($path) {
-		$this->whiteList[] = rtrim($path, '/');
+		$this->filter->addWhiteList($path);
+	}
+
+	/**
+	 * Add a folder to the black list
+	 *
+	 * @param string $path
+	 */
+	public function addBlackList($path) {
+		$this->filter->addBlackList($path);
 	}
 
 	/**
@@ -33,45 +51,7 @@ class Interceptor {
 	 * @return bool
 	 */
 	public function shouldIntercept($path) {
-		return $this->isValidExtension($path) && $this->isWhiteListed($path);
-	}
-
-	/**
-	 * Check if a file has a whitelisted extension
-	 *
-	 * @param string $path
-	 * @return bool
-	 */
-	private function isValidExtension($path) {
-		$extension = pathinfo($path, PATHINFO_EXTENSION);
-		return in_array($extension, $this->extensions);
-	}
-
-	/**
-	 * Check if a file is within a whitelisted folder
-	 *
-	 * @param string $path
-	 * @return bool
-	 */
-	private function isWhiteListed($path) {
-		foreach ($this->whiteList as $whiteList) {
-			if ($this->inDirectory($whiteList, $path)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-
-	/**
-	 * Check if a file is within a folder
-	 *
-	 * @param string $directory
-	 * @param string $path
-	 * @return bool
-	 */
-	private function inDirectory($directory, $path) {
-		return (substr($path, 0, strlen($directory) + 1) === $directory . '/');
+		return $this->filter->test($path);
 	}
 
 	/**

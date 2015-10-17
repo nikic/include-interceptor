@@ -14,26 +14,31 @@ class InterceptorTests extends TestCase {
 
 	public function whiteListProvider() {
 		return [
-			[['/foo'], '/foo/bar.php', true],
-			[['/foo/'], '/foo/bar.php', true],
-			[['/foo/bar'], '/foo/bar.php', false],
-			[['/foobar'], '/foo/bar.php', false],
-			[['/foo/'], '/foo/bar.phar', true],
-			[['/foo/'], '/foo/bar.txt', false],
-			[['/foo/'], '/foo/php', false]
+			[['/foo'], [], '/foo/bar.php', true],
+			[['/foo/'], [], '/foo/bar.php', true],
+			[[''], ['/foo'], '/foo/bar.php', false],
+			[['/foo/bar'], [], '/foo/bar.php', false],
+			[['/foobar'], [], '/foo/bar.php', false],
+			[['/foo/'], [], '/foo/bar.phar', true],
+			[['/foo/'], [], '/foo/bar.txt', false],
+			[['/foo/'], [], '/foo/php', false]
 		];
 	}
 
 	/**
 	 * @param string[] $whiteList
+	 * @param string[] $blacklist
 	 * @param string $path
 	 * @param bool $expected
 	 * @dataProvider whiteListProvider
 	 */
-	public function testShouldIntercept($whiteList, $path, $expected) {
+	public function testShouldIntercept($whiteList, $blacklist, $path, $expected) {
 		$instance = new Interceptor();
 		foreach ($whiteList as $folder) {
 			$instance->addWhiteList($folder);
+		}
+		foreach ($blacklist as $folder) {
+			$instance->addBlackList($folder);
 		}
 		$this->assertEquals($expected, $instance->shouldIntercept($path));
 	}

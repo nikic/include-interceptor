@@ -28,11 +28,15 @@ require 'src/foo.php'
 
 ## API
 
-- `addWhiteList(string $path)`: Add a folder to the whitelist, only files located in whitelisted folders will be intercepted
+- `addWhiteList(string $path)`: Add a folder to the white list
+- `addBlackList(string $path)`: Add a folder to the black list
+ - Only white listed files will be intercepted
+ - A file is white listed if it has a parent folder that is white listed
+ without there being a more direct parent folder that is black listed
 - `addHook(callable $hook)`: Register a hook to the intercepter
  - the registered callback will be called for every include which is intercepted
  - The code being included will be passed as the first argument
- - The path being includded will be passed as seccond argument
+ - The path being included will be passed as second argument
  - If the hook returns a string the loaded code will be replaced by the return value
 - `setUp()` start intercepting includes
 - `tearDown()` stop intercepting includes
