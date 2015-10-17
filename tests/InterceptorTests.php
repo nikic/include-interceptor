@@ -8,8 +8,10 @@
 namespace Icewind\Interceptor\Tests;
 
 use Icewind\Interceptor\Interceptor;
+use Icewind\Interceptor\Stream;
 
 class InterceptorTests extends TestCase {
+
 	public function whiteListProvider() {
 		return [
 			[['/foo'], '/foo/bar.php', true],
@@ -95,8 +97,52 @@ class InterceptorTests extends TestCase {
 		/** @var callable $method */
 		$method = include 'data/addOne.php';
 
-		$instance->unwrap();
+		$instance->tearDown();
 
 		$this->assertEquals(3, $method(1));
+	}
+
+	/**
+	 * @expectedException \BadMethodCallException
+	 */
+	public function testDoubleSetup() {
+		$instance = new Interceptor();
+
+		$instance->setUp();
+		try {
+			$instance->setUp();
+		} catch (\BadMethodCallException $e) {
+			$instance->tearDown();
+			throw $e;
+		}
+		$instance->tearDown();
+	}
+
+	public function testTearDownSetup() {
+		$instance = new Interceptor();
+		$instance->addHook(function ($code) {
+			return str_replace('1', '2', $code);
+		});
+		$instance->addWhiteList(__DIR__ . '/data');
+
+		$instance->setUp();
+
+		/** @var callable $method1 */
+		$method1 = include 'data/addOne.php';
+
+		$instance->tearDown();
+
+		/** @var callable $method2 */
+		$method2 = include 'data/addOne.php';
+
+		$instance->setUp();
+		/** @var callable $method3 */
+		$method3 = include 'data/addOne.php';
+
+		$instance->tearDown();
+
+		$this->assertEquals(3, $method1(1));
+		$this->assertEquals(2, $method2(1));
+		$this->assertEquals(3, $method3(1));
 	}
 }

@@ -35,3 +35,4 @@ require 'src/foo.php'
  - The path being includded will be passed as seccond argument
  - If the hook returns a string the loaded code will be replaced by the return value
 - `setUp()` start intercepting includes
+- `tearDown()` stop intercepting includes

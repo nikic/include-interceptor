@@ -15,8 +15,16 @@ class Stream {
 	 */
 	private static $defaultInterceptor;
 
+	public static function hasInterceptor() {
+		return self::$defaultInterceptor instanceof Interceptor;
+	}
+
 	public static function setInterceptor(Interceptor $interceptor) {
 		self::$defaultInterceptor = $interceptor;
+	}
+
+	public static function clearInterceptor() {
+		self::$defaultInterceptor = null;
 	}
 
 	/**
