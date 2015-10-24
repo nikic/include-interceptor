@@ -48,8 +48,31 @@ class Stream {
 		return $result;
 	}
 
+	/**
+	 * Check if the path is relative to the file that included it
+	 *
+	 * @param string $path
+	 * @param array $caller
+	 * @return string
+	 */
+	private function fixPath($path, $caller) {
+		if ($path[0] === '/') {
+			return $path;
+		}
+		$callerDir = dirname($caller['file']);
+		$pathFromCallerContext = $callerDir . '/' . $path;
+		if (file_exists($pathFromCallerContext)) {
+			return realpath($pathFromCallerContext);
+		} else {
+			return $path;
+		}
+	}
+
 	public function stream_open($path, $mode, $options) {
-		return $this->runUnwrapped(function (Interceptor $interceptor) use ($path, $mode, $options) {
+		$caller = debug_backtrace()[0];
+		return $this->runUnwrapped(function (Interceptor $interceptor) use ($path, $mode, $options, $caller) {
+			$path = $this->fixPath($path, $caller);
+
 			$including = (bool)($options & self::STREAM_OPEN_FOR_INCLUDE);
 			if ($including && $interceptor->shouldIntercept($path)) {
 				$this->resource = $interceptor->intercept($path);
