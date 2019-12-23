@@ -22,6 +22,9 @@ class IncludePathTests extends TestCase {
 		/** @var callable $method */
 		$method = include '../data/addOne.php';
 
+		// Make sure a normal file_get_contents() works as well.
+		$this->assertNotFalse(file_get_contents('../data/addOne.php'));
+
 		$instance->tearDown();
 
 		$this->assertEquals(3, $method(1));

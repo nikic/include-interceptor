@@ -49,17 +49,32 @@ class Stream {
 	}
 
 	/**
+	 * Determine file which called stream_open() based on backtrace.
+	 *
+	 * @param array $backtrace
+	 * @return string|null
+	 */
+	private function getCallingFile($backtrace) {
+		foreach ($backtrace as $call) {
+			if (isset($call['file'])) {
+				return $call['file'];
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Check if the path is relative to the file that included it
 	 *
 	 * @param string $path
-	 * @param array $caller
+	 * @param array $backtrace
 	 * @return string
 	 */
-	private function fixPath($path, $caller) {
+	private function fixPath($path, $backtrace) {
 		if ($path[0] === '/') {
 			return $path;
 		}
-		$callerDir = dirname($caller['file']);
+		$callerDir = dirname($this->getCallingFile($backtrace));
 		$pathFromCallerContext = $callerDir . '/' . $path;
 		if (file_exists($pathFromCallerContext)) {
 			return realpath($pathFromCallerContext);
@@ -69,9 +84,9 @@ class Stream {
 	}
 
 	public function stream_open($path, $mode, $options) {
-		$caller = debug_backtrace()[0];
-		return $this->runUnwrapped(function (Interceptor $interceptor) use ($path, $mode, $options, $caller) {
-			$path = $this->fixPath($path, $caller);
+		$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+		return $this->runUnwrapped(function (Interceptor $interceptor) use ($path, $mode, $options, $backtrace) {
+			$path = $this->fixPath($path, $backtrace);
 
 			$including = (bool)($options & self::STREAM_OPEN_FOR_INCLUDE);
 			if ($including && $interceptor->shouldIntercept($path)) {
