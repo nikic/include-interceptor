@@ -7,7 +7,7 @@
 
 namespace Nikic\IncludeInterceptor\Tests;
 
-abstract class TestCase extends \PHPUnit_Framework_TestCase {
+abstract class TestCase extends \PHPUnit\Framework\TestCase {
 	private $tmpFiles = [];
 
 	public function tearDown() {
