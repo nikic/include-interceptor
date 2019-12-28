@@ -23,28 +23,19 @@ class FileFilter {
 	 */
 	private $extensions = [];
 
-	/**
-	 * @param string $path
-	 */
-	public function addWhiteList($path) {
+	public function addWhiteList(string $path): void {
 		$this->whiteList[] = rtrim($path, '/');
 	}
 
-	/**
-	 * @param string $path
-	 */
-	public function addBlackList($path) {
+	public function addBlackList(string $path): void {
 		$this->blackList[] = rtrim($path, '/');
 	}
 
-	/**
-	 * @param string $extension
-	 */
-	public function addExtension($extension) {
+	public function addExtension(string $extension): void {
 		$this->extensions[] = ltrim($extension, '.');
 	}
 
-	public function test($path) {
+	public function test(string $path): bool {
 		if (!$this->isValidExtension($path)) {
 			return false;
 		}
@@ -52,42 +43,32 @@ class FileFilter {
 	}
 
 	/**
-	 * Check if a file has a whitelisted extension
-	 *
-	 * @param string $path
-	 * @return bool
+	 * Check if a file has a whitelisted extension.
 	 */
-	private function isValidExtension($path) {
+	private function isValidExtension(string $path): bool {
 		$extension = pathinfo($path, PATHINFO_EXTENSION);
 		return in_array($extension, $this->extensions);
 	}
 
 	/**
-	 * Check if a file is within a white listed folder
+	 * Check if a file is within a white listed folder.
 	 *
-	 * @param string $path
 	 * @return int the length of the longest white list match
 	 */
-	private function isWhiteListed($path) {
+	private function isWhiteListed(string $path): int {
 		return $this->isListed($path, $this->whiteList);
 	}
 
 	/**
-	 * Check if a file is within a black listed folder
+	 * Check if a file is within a black listed folder.
 	 *
-	 * @param string $path
 	 * @return int the length of the longest black list match
 	 */
-	private function isBlackListed($path) {
+	private function isBlackListed(string $path): int {
 		return $this->isListed($path, $this->blackList);
 	}
 
-	/**
-	 * @param string $path
-	 * @param string[] $list
-	 * @return int
-	 */
-	private function isListed($path, array $list) {
+	private function isListed(string $path, array $list): int {
 		$length = 0;
 		foreach ($list as $item) {
 			if (strlen($item) >= $length && $this->inDirectory($item, $path)) {
@@ -98,13 +79,9 @@ class FileFilter {
 	}
 
 	/**
-	 * Check if a file is within a folder
-	 *
-	 * @param string $directory
-	 * @param string $path
-	 * @return bool
+	 * Check if a file is within a folder.
 	 */
-	private function inDirectory($directory, $path) {
+	private function inDirectory(string $directory, string $path): bool {
 		return ($directory === '') || (substr($path, 0, strlen($directory) + 1) === $directory . '/');
 	}
 }

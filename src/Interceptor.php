@@ -27,55 +27,45 @@ class Interceptor {
 	}
 
 	/**
-	 * Add a folder to the white list
-	 *
-	 * @param string $path
+	 * Add a folder to the white list.
 	 */
-	public function addWhiteList($path) {
+	public function addWhiteList(string $path): void {
 		$this->filter->addWhiteList($path);
 	}
 
 	/**
-	 * Add a folder to the black list
-	 *
-	 * @param string $path
+	 * Add a folder to the black list.
 	 */
-	public function addBlackList($path) {
+	public function addBlackList(string $path): void {
 		$this->filter->addBlackList($path);
 	}
 
 	/**
-	 * Check if we should intercept a file
-	 *
-	 * @param string $path
-	 * @return bool
+	 * Check if we should intercept a file.
 	 */
-	public function shouldIntercept($path) {
+	public function shouldIntercept(string $path): bool {
 		return $this->filter->test($path);
 	}
 
 	/**
-	 * Register an intercept hook
+	 * Register an intercept hook.
 	 *
 	 * The callback should have the following signature:
 	 *     function hook(string $code, string $path): string|void
 	 *
 	 * If the callback returns a string the loaded code will be replaced with the result
-	 *
-	 * @param callable $hook
 	 */
-	public function addHook(callable $hook) {
+	public function addHook(callable $hook): void {
 		$this->hooks[] = $hook;
 	}
 
 	/**
-	 * Open a file and run it trough all the hooks
+	 * Open a file and run it through all the hooks.
 	 *
-	 * @param string $path
 	 * @return resource
 	 * @internal
 	 */
-	public function intercept($path) {
+	public function intercept(string $path) {
 		$code = file_get_contents($path);
 		foreach ($this->hooks as $hook) {
 			$result = $hook($code, $path);
@@ -90,9 +80,9 @@ class Interceptor {
 	}
 
 	/**
-	 * Setup this instance to intercept include calls
+	 * Setup this instance to intercept include calls.
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		if (Stream::hasInterceptor()) {
 			throw new \BadMethodCallException('An interceptor is already active');
 		}
@@ -101,19 +91,19 @@ class Interceptor {
 	}
 
 	/**
-	 * Stop intercepting include calls
+	 * Stop intercepting include calls.
 	 */
-	public function tearDown() {
+	public function tearDown(): void {
 		$this->unwrap();
 		Stream::clearInterceptor();
 	}
 
 	/**
-	 * Register the stream wrapper
+	 * Register the stream wrapper.
 	 *
 	 * @internal
 	 */
-	public function wrap() {
+	public function wrap(): void {
 		foreach ($this->protocols as $protocol) {
 			stream_wrapper_unregister($protocol);
 			stream_wrapper_register($protocol, Stream::class);
@@ -121,11 +111,11 @@ class Interceptor {
 	}
 
 	/**
-	 * Unregister the stream wrapper
+	 * Unregister the stream wrapper.
 	 *
 	 * @internal
 	 */
-	public function unwrap() {
+	public function unwrap(): void {
 		foreach ($this->protocols as $protocol) {
 			stream_wrapper_restore($protocol);
 		}

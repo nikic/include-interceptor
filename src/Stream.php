@@ -15,15 +15,15 @@ class Stream {
 	 */
 	private static $defaultInterceptor;
 
-	public static function hasInterceptor() {
+	public static function hasInterceptor(): bool {
 		return self::$defaultInterceptor instanceof Interceptor;
 	}
 
-	public static function setInterceptor(Interceptor $interceptor) {
+	public static function setInterceptor(Interceptor $interceptor): void {
 		self::$defaultInterceptor = $interceptor;
 	}
 
-	public static function clearInterceptor() {
+	public static function clearInterceptor(): void {
 		self::$defaultInterceptor = null;
 	}
 
@@ -50,11 +50,8 @@ class Stream {
 
 	/**
 	 * Determine file which called stream_open() based on backtrace.
-	 *
-	 * @param array $backtrace
-	 * @return string|null
 	 */
-	private function getCallingFile($backtrace) {
+	private function getCallingFile(array $backtrace): ?string {
 		foreach ($backtrace as $call) {
 			if (isset($call['file'])) {
 				return $call['file'];
@@ -64,13 +61,9 @@ class Stream {
 	}
 
 	/**
-	 * Check if the path is relative to the file that included it
-	 *
-	 * @param string $path
-	 * @param array $backtrace
-	 * @return string
+	 * Check if the path is relative to the file that included it.
 	 */
-	private function fixPath($path, $backtrace) {
+	private function fixPath(string $path, array $backtrace): string {
 		if ($path[0] === '/') {
 			return $path;
 		}
