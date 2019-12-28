@@ -11,22 +11,22 @@ use Nikic\IncludeInterceptor\Interceptor;
 
 class IncludePathTests extends TestCase {
 
-	public function testInterceptFromOtherFolder() {
-		$instance = new Interceptor();
-		$instance->addHook(function ($code) {
-			return str_replace('1', '2', $code);
-		});
-		$instance->addWhiteList(dirname(__DIR__) . '/data');
-		$instance->setUp();
+    public function testInterceptFromOtherFolder() {
+        $instance = new Interceptor();
+        $instance->addHook(function ($code) {
+            return str_replace('1', '2', $code);
+        });
+        $instance->addWhiteList(dirname(__DIR__) . '/data');
+        $instance->setUp();
 
-		/** @var callable $method */
-		$method = include '../data/addOne.php';
+        /** @var callable $method */
+        $method = include '../data/addOne.php';
 
-		// Make sure a normal file_get_contents() works as well.
-		$this->assertNotFalse(file_get_contents('../data/addOne.php'));
+        // Make sure a normal file_get_contents() works as well.
+        $this->assertNotFalse(file_get_contents('../data/addOne.php'));
 
-		$instance->tearDown();
+        $instance->tearDown();
 
-		$this->assertEquals(3, $method(1));
-	}
+        $this->assertEquals(3, $method(1));
+    }
 }

@@ -8,39 +8,39 @@
 namespace Nikic\IncludeInterceptor\Tests;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase {
-	private $tmpFiles = [];
+    private $tmpFiles = [];
 
-	public function tearDown(): void {
-		parent::tearDown();
-		foreach ($this->tmpFiles as $file) {
-			if (is_file($file)) {
-				unlink($file);
-			}
-		}
-	}
+    public function tearDown(): void {
+        parent::tearDown();
+        foreach ($this->tmpFiles as $file) {
+            if (is_file($file)) {
+                unlink($file);
+            }
+        }
+    }
 
-	protected function tempNam($postFix = '') {
-		$id = uniqid();
-		$file = tempnam(sys_get_temp_dir(), $id . $postFix);
-		$tmpFiles[] = $file;
-		return $file;
-	}
+    protected function tempNam($postFix = '') {
+        $id = uniqid();
+        $file = tempnam(sys_get_temp_dir(), $id . $postFix);
+        $tmpFiles[] = $file;
+        return $file;
+    }
 
-	/**
-	 * @param resource $stream
-	 * @return callable
-	 * @throws \Exception
-	 */
-	protected function loadCode($stream) {
-		$file = $this->tempNam('.php');
-		file_put_contents($file, $stream);
-		try {
-			$result = include $file;
-			unlink($file);
-			return $result;
-		} catch (\Exception $e) {
-			unlink($file);
-			throw $e;
-		}
-	}
+    /**
+     * @param resource $stream
+     * @return callable
+     * @throws \Exception
+     */
+    protected function loadCode($stream) {
+        $file = $this->tempNam('.php');
+        file_put_contents($file, $stream);
+        try {
+            $result = include $file;
+            unlink($file);
+            return $result;
+        } catch (\Exception $e) {
+            unlink($file);
+            throw $e;
+        }
+    }
 }

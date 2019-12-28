@@ -1,5 +1,5 @@
 <?php
 
-return function($a) {
-	return $a + 1;
+return function ($a) {
+    return $a + 1;
 };
