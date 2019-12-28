@@ -116,7 +116,7 @@ class Interceptor {
 	public function wrap() {
 		foreach ($this->protocols as $protocol) {
 			stream_wrapper_unregister($protocol);
-			stream_wrapper_register($protocol, '\Nikic\IncludeInterceptor\Stream');
+			stream_wrapper_register($protocol, Stream::class);
 		}
 	}
 

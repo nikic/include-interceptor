@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<phpunit bootstrap="bootstrap.php">
+<phpunit bootstrap="vendor/autoload.php">
 	<testsuite name='Interceptor'>
-		<directory suffix='.php'>./</directory>
+		<directory suffix='.php'>tests/</directory>
 	</testsuite>
 	<!-- filters for code coverage -->
 	<filter>
 		<whitelist>
-			<directory suffix=".php">../src</directory>
+			<directory suffix=".php">src/</directory>
 		</whitelist>
 	</filter>
 </phpunit>

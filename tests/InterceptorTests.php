@@ -8,7 +8,6 @@
 namespace Nikic\IncludeInterceptor\Tests;
 
 use Nikic\IncludeInterceptor\Interceptor;
-use Nikic\IncludeInterceptor\Stream;
 
 class InterceptorTests extends TestCase {
 
@@ -107,10 +106,8 @@ class InterceptorTests extends TestCase {
 		$this->assertEquals(3, $method(1));
 	}
 
-	/**
-	 * @expectedException \BadMethodCallException
-	 */
 	public function testDoubleSetup() {
+	    $this->expectException(\BadMethodCallException::class);
 		$instance = new Interceptor();
 
 		$instance->setUp();

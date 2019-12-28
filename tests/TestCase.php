@@ -10,7 +10,7 @@ namespace Nikic\IncludeInterceptor\Tests;
 abstract class TestCase extends \PHPUnit\Framework\TestCase {
 	private $tmpFiles = [];
 
-	public function tearDown() {
+	public function tearDown(): void {
 		parent::tearDown();
 		foreach ($this->tmpFiles as $file) {
 			if (is_file($file)) {
