@@ -51,7 +51,7 @@ class FileFilter {
 	}
 
 	/**
-	 * Check if a file is within a white listed folder.
+	 * Check if a file is whitelisted.
 	 *
 	 * @return int the length of the longest white list match
 	 */
@@ -60,7 +60,7 @@ class FileFilter {
 	}
 
 	/**
-	 * Check if a file is within a black listed folder.
+	 * Check if a file is blacklisted.
 	 *
 	 * @return int the length of the longest black list match
 	 */
@@ -71,8 +71,14 @@ class FileFilter {
 	private function isListed(string $path, array $list): int {
 		$length = 0;
 		foreach ($list as $item) {
-			if (strlen($item) >= $length && $this->inDirectory($item, $path)) {
-				$length = strlen($item) + 1; // +1 for trailing /
+		    $itemLen = \strlen($item);
+		    // Check for exact file match.
+		    if ($item === $path) {
+		        return $itemLen;
+            }
+		    // Check for directory match.
+			if ($itemLen >= $length && $this->inDirectory($item, $path)) {
+				$length = $itemLen + 1; // +1 for trailing /
 			}
 		}
 		return $length;
