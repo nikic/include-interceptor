@@ -5,7 +5,7 @@
  * http://opensource.org/licenses/MIT
  */
 
-namespace Icewind\Interceptor\Tests;
+namespace Nikic\IncludeInterceptor\Tests;
 
 abstract class TestCase extends \PHPUnit_Framework_TestCase {
 	private $tmpFiles = [];

@@ -1,19 +1,17 @@
-# Interceptor
+# Include Interceptor
 
-[![Build Status](https://travis-ci.org/icewind1991/interceptor.svg?branch=master)](https://travis-ci.org/icewind1991/interceptor)
-[![Code Coverage](https://scrutinizer-ci.com/g/icewind1991/interceptor/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/icewind1991/interceptor/?branch=master)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/icewind1991/interceptor/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/icewind1991/interceptor/?branch=master)
+[![Build Status](https://travis-ci.org/nikic/include-interceptor.svg?branch=master)](https://travis-ci.org/nikic/include-interceptor)
 
-Intercept php includes
+Library to intercept PHP includes. A fork of [icewind1991/interceptor](https://github.com/icewind1991/interceptor).
 
 ```
-composer require icewind/interceptor
+composer require nikic/include-interceptor
 ```
 
 ## Usage
 
 ```php
-use Icewind\Interceptor\Interceptor;
+use Nikic\IncludeInterceptor\Interceptor;
 
 $interceptor = new Interceptor();
 $interceptor->addWhiteList(__DIR__ . '/src');
@@ -23,7 +21,7 @@ $interceptor->addHook(function($code) {
 
 $interceptor->setUp();
 
-require 'src/foo.php'
+require 'src/foo.php';
 ```
 
 ## API

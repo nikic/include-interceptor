@@ -1,6 +1,6 @@
 {
-	"name": "icewind/interceptor",
-	"description": "Intercept php includes",
+	"name": "nikic/include-interceptor",
+	"description": "Intercept PHP includes",
 	"license": "MIT",
 	"authors": [
 		{
@@ -16,8 +16,8 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"Icewind\\Interceptor\\Tests\\": "tests/",
-			"Icewind\\Interceptor\\": "src/"
+			"Nikic\\IncludeInterceptor\\Tests\\": "tests/",
+			"Nikic\\IncludeInterceptor\\": "src/"
 		}
 	}
 }

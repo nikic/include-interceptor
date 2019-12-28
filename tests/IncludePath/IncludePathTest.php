@@ -5,9 +5,9 @@
  * http://opensource.org/licenses/MIT
  */
 
-namespace Icewind\Interceptor\Tests;
+namespace Nikic\IncludeInterceptor\Tests;
 
-use Icewind\Interceptor\Interceptor;
+use Nikic\IncludeInterceptor\Interceptor;
 
 class IncludePathTests extends TestCase {
 

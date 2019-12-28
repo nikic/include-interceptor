@@ -9,8 +9,4 @@
 			<directory suffix=".php">../src</directory>
 		</whitelist>
 	</filter>
-	<logging>
-		<!-- and this is where your report will be written -->
-		<log type="coverage-clover" target="./clover.xml"/>
-	</logging>
 </phpunit>

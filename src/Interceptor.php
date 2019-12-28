@@ -5,7 +5,7 @@
  * Based on https://github.com/antecedent/patchwork/blob/master/Patchwork.php
  */
 
-namespace Icewind\Interceptor;
+namespace Nikic\IncludeInterceptor;
 
 class Interceptor {
 	/**
@@ -116,7 +116,7 @@ class Interceptor {
 	public function wrap() {
 		foreach ($this->protocols as $protocol) {
 			stream_wrapper_unregister($protocol);
-			stream_wrapper_register($protocol, '\Icewind\Interceptor\Stream');
+			stream_wrapper_register($protocol, '\Nikic\IncludeInterceptor\Stream');
 		}
 	}
 

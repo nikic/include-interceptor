@@ -5,10 +5,10 @@
  * http://opensource.org/licenses/MIT
  */
 
-namespace Icewind\Interceptor\Tests;
+namespace Nikic\IncludeInterceptor\Tests;
 
-use Icewind\Interceptor\Interceptor;
-use Icewind\Interceptor\Stream;
+use Nikic\IncludeInterceptor\Interceptor;
+use Nikic\IncludeInterceptor\Stream;
 
 class StreamTests extends TestCase {
 	protected function fopen($source, $mode) {

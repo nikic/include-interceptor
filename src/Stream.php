@@ -5,7 +5,7 @@
  * Based on https://github.com/antecedent/patchwork/blob/master/Patchwork.php
  */
 
-namespace Icewind\Interceptor;
+namespace Nikic\IncludeInterceptor;
 
 class Stream {
 	const STREAM_OPEN_FOR_INCLUDE = 128;

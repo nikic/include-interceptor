@@ -5,9 +5,9 @@
  * http://opensource.org/licenses/MIT
  */
 
-namespace Icewind\Interceptor\Tests;
+namespace Nikic\IncludeInterceptor\Tests;
 
-use Icewind\Interceptor\FileFilter;
+use Nikic\IncludeInterceptor\FileFilter;
 
 class FileFilterTests extends TestCase {
 	public function filterProvider() {
