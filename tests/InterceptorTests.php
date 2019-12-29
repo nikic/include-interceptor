@@ -58,6 +58,24 @@ class InterceptorTests extends TestCase {
         $this->assertEquals(3, $method(1));
     }
 
+    public function testPharIntercept() {
+        $filter = FileFilter::createDefault();
+        $filter->addWhiteList('phar://' . __DIR__ . '/data.phar');
+        $instance = new Interceptor(function (string $path) use ($filter) {
+            if (!$filter->test($path)) return null;
+            $code = file_get_contents($path);
+            return str_replace('1', '2', $code);
+        });
+        $instance->setUp();
+
+        /** @var callable $method */
+        $method = include 'phar://' . __DIR__ . '/../tests/data.phar/./addOne.php';
+
+        $instance->tearDown();
+
+        $this->assertEquals(3, $method(1));
+    }
+
     public function testDoubleSetup() {
         $this->expectException(\BadMethodCallException::class);
         $instance = new Interceptor(function(string $path) {

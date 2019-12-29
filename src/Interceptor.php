@@ -20,6 +20,7 @@ class Interceptor {
      * The hook should have the following signature:
      *     function(string $path): string|null
      *
+     * The hook is passed the realpath of the included file.
      * The hook can return null to skip interception for this file,
      * or a string, to specify the transformed file contents.
      */

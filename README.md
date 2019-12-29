@@ -32,9 +32,9 @@ use Nikic\IncludeInterceptor\Interceptor;
 use Nikic\IncludeInterceptor\FileFilter;
 
 $fileFilter = FileFilter::createDefault();
-$fileFilter->addWhiteList('');            // Whitelist everything
-$fileFilter->addBlackList('src/');        // Blacklist the src/ directory
-$fileFilter->addWhiteList('src/foo.php'); // But whitelist the src/foo.php file
+$fileFilter->addWhiteList('');                       // Whitelist everything
+$fileFilter->addBlackList(__DIR__ . '/src/');        // Blacklist the src/ directory
+$fileFilter->addWhiteList(__DIR__ . '/src/foo.php'); // But whitelist the src/foo.php file
 $interceptor = new Interceptor(function(string $path) use ($fileFilter) {
     if (!$fileFilter->test($path)) {
         return null;

@@ -76,6 +76,36 @@ class Stream {
         }
     }
 
+    /**
+     * For file streams the path passed to stream_open() is already the realpath().
+     * For phar:// streams the realpath() operation is not supported, so manually
+     * resoled ./ and ../ segments, so that filtering code doesn't have to deal
+     * with it.
+     */
+    private function realpathPhar(string $path): ?string {
+        // Implementation based on https://github.com/UnionOfRAD/lithium/blob/master/core/Libraries.php.
+        if (!preg_match('%^phar://(.+\.phar(?:\.gz)?)(.+)%', $path, $pathComponents)) {
+            return $path;
+        }
+        list(, $relativePath, $pharPath) = $pathComponents;
+
+        $pharPath = implode('/', array_reduce(explode('/', $pharPath), function ($parts, $value) {
+            if ($value === '..') {
+                array_pop($parts);
+            } elseif ($value !== '.') {
+                $parts[] = $value;
+            }
+            return $parts;
+        }));
+
+        if (($resolvedPath = realpath($relativePath)) !== false) {
+            if (file_exists($absolutePath = "phar://{$resolvedPath}{$pharPath}")) {
+                return $absolutePath;
+            }
+        }
+        return null;
+    }
+
     public function stream_open($path, $mode, $options) {
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
         return $this->runUnwrapped(function (Interceptor $interceptor) use ($path, $mode, $options, $backtrace) {
@@ -83,9 +113,12 @@ class Stream {
 
             $including = (bool)($options & self::STREAM_OPEN_FOR_INCLUDE);
             if ($including) {
-                $this->resource = $interceptor->intercept($path);
-                if ($this->resource !== null) {
-                    return true;
+                $realPath = $this->realpathPhar($path);
+                if ($realPath !== null) {
+                    $this->resource = $interceptor->intercept($realPath);
+                    if ($this->resource !== null) {
+                        return true;
+                    }
                 }
             }
 
