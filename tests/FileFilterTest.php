@@ -14,8 +14,7 @@ class FileFilterTests extends TestCase {
         return [
             ['/foo.txt', [], [], [], false],
             ['/foo.txt', [], [], ['txt'], false],
-            ['/foo.txt', [''], [], [], false],
-            ['/foo.txt', [''], [], [], false],
+            ['/foo.txt', [''], [], [], true],
             ['/foo.txt', [''], [], ['php'], false],
             ['/foo.txt', [''], [], ['txt'], true],
             ['/bar/asd/foo.txt', [''], ['/bar'], ['txt'], false],

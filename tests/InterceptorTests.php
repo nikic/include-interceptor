@@ -42,7 +42,7 @@ class InterceptorTests extends TestCase {
     }
 
     public function testIntercept() {
-        $filter = FileFilter::createDefault();
+        $filter = FileFilter::createAllBlacklisted();
         $filter->addWhiteList(__DIR__ . '/data');
         $instance = new Interceptor(function (string $path) use ($filter) {
             if (!$filter->test($path)) return null;
@@ -60,7 +60,7 @@ class InterceptorTests extends TestCase {
     }
 
     public function testPharIntercept() {
-        $filter = FileFilter::createDefault();
+        $filter = FileFilter::createAllBlacklisted();
         $filter->addWhiteList('phar://' . __DIR__ . '/data.phar');
         $instance = new Interceptor(function (string $path) use ($filter) {
             if (!$filter->test($path)) return null;
@@ -108,7 +108,7 @@ class InterceptorTests extends TestCase {
     }
 
     public function testTearDownSetup() {
-        $filter = FileFilter::createDefault();
+        $filter = FileFilter::createAllBlacklisted();
         $filter->addWhiteList(__DIR__ . '/data');
         $instance = new Interceptor(function (string $path) use ($filter) {
             if (!$filter->test($path)) return null;

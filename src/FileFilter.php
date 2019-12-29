@@ -19,15 +19,18 @@ class FileFilter {
     private $blackList = [];
 
     /**
-     * @var string[]
+     * @var string[]|null Null indicates that all extensions are allowed.
      */
-    private $extensions = [];
+    private $extensions = null;
 
-    public static function createDefault(): FileFilter {
-        $filter = new self;
-        $filter->addExtension('php');
-        $filter->addExtension('phar');
+    public static function createAllWhitelisted(): FileFilter {
+        $filter = new self();
+        $filter->addWhiteList('');
         return $filter;
+    }
+
+    public static function createAllBlacklisted(): FileFilter {
+        return new self();
     }
 
     public function addWhiteList(string $path): void {
@@ -53,6 +56,9 @@ class FileFilter {
      * Check if a file has a whitelisted extension.
      */
     private function isValidExtension(string $path): bool {
+        if ($this->extensions === null) {
+            return true;
+        }
         $extension = pathinfo($path, PATHINFO_EXTENSION);
         return in_array($extension, $this->extensions);
     }

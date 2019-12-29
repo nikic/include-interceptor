@@ -13,7 +13,7 @@ use Nikic\IncludeInterceptor\Interceptor;
 class IncludePathTests extends TestCase {
 
     public function testInterceptFromOtherFolder() {
-        $filter = FileFilter::createDefault();
+        $filter = FileFilter::createAllBlacklisted();
         $filter->addWhiteList(dirname(__DIR__) . '/data');
         $instance = new Interceptor(function(string $path) use ($filter) {
             if (!$filter->test($path)) return null;
