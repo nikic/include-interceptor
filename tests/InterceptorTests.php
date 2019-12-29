@@ -9,6 +9,7 @@ namespace Nikic\IncludeInterceptor\Tests;
 
 use Nikic\IncludeInterceptor\FileFilter;
 use Nikic\IncludeInterceptor\Interceptor;
+use PHPUnit\Framework\Error\Warning;
 
 class InterceptorTests extends TestCase {
     public function testInterceptNoopHook() {
@@ -83,7 +84,7 @@ class InterceptorTests extends TestCase {
         $instance->setUp();
 
         try {
-            $this->expectWarning();
+            $this->expectException(Warning::class);
             include __DIR__ . '/data/doesntExist.php';
         } finally {
             $instance->tearDown();
