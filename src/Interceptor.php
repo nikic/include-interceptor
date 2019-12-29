@@ -8,7 +8,8 @@
 namespace Nikic\IncludeInterceptor;
 
 class Interceptor {
-    private $protocols = ['file', 'phar'];
+    /** @var string[] */
+    private $protocols;
 
     /** @var callable */
     private $hook;
@@ -22,12 +23,13 @@ class Interceptor {
      * The hook can return null to skip interception for this file,
      * or a string, to specify the transformed file contents.
      */
-    public function __construct(callable $hook) {
+    public function __construct(callable $hook, array $protocols = ['file', 'phar']) {
         $this->hook = $hook;
+        $this->protocols = $protocols;
     }
 
     /**
-     * Open a file and run it through all the hooks.
+     * Open a file and run it through the hook.
      *
      * @return resource
      * @internal
