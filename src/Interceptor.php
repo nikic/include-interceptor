@@ -8,55 +8,22 @@
 namespace Nikic\IncludeInterceptor;
 
 class Interceptor {
-    /**
-     * @var FileFilter
-     */
-    private $filter;
-
     private $protocols = ['file', 'phar'];
 
-    /**
-     * @var callable[]
-     */
-    private $hooks = [];
-
-    public function __construct() {
-        $this->filter = new FileFilter();
-        $this->filter->addExtension('php');
-        $this->filter->addExtension('phar');
-    }
+    /** @var callable */
+    private $hook;
 
     /**
-     * Add a folder to the white list.
-     */
-    public function addWhiteList(string $path): void {
-        $this->filter->addWhiteList($path);
-    }
-
-    /**
-     * Add a folder to the black list.
-     */
-    public function addBlackList(string $path): void {
-        $this->filter->addBlackList($path);
-    }
-
-    /**
-     * Check if we should intercept a file.
-     */
-    public function shouldIntercept(string $path): bool {
-        return $this->filter->test($path);
-    }
-
-    /**
-     * Register an intercept hook.
+     * Create an interceptor.
      *
-     * The callback should have the following signature:
-     *     function hook(string $code, string $path): string|void
+     * The hook should have the following signature:
+     *     function(string $path): string|null
      *
-     * If the callback returns a string the loaded code will be replaced with the result
+     * The hook can return null to skip interception for this file,
+     * or a string, to specify the transformed file contents.
      */
-    public function addHook(callable $hook): void {
-        $this->hooks[] = $hook;
+    public function __construct(callable $hook) {
+        $this->hook = $hook;
     }
 
     /**
@@ -66,15 +33,13 @@ class Interceptor {
      * @internal
      */
     public function intercept(string $path) {
-        $code = file_get_contents($path);
-        foreach ($this->hooks as $hook) {
-            $result = $hook($code, $path);
-            if (is_string($result)) {
-                $code = $result;
-            }
+        $result = ($this->hook)($path);
+        if ($result === null) {
+            return null;
         }
+
         $stream = fopen('php://temp', 'r+');
-        fwrite($stream, $code);
+        fwrite($stream, $result);
         rewind($stream);
         return $stream;
     }

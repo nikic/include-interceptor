@@ -7,16 +7,19 @@
 
 namespace Nikic\IncludeInterceptor\Tests;
 
+use Nikic\IncludeInterceptor\FileFilter;
 use Nikic\IncludeInterceptor\Interceptor;
 
 class IncludePathTests extends TestCase {
 
     public function testInterceptFromOtherFolder() {
-        $instance = new Interceptor();
-        $instance->addHook(function ($code) {
+        $filter = FileFilter::createDefault();
+        $filter->addWhiteList(dirname(__DIR__) . '/data');
+        $instance = new Interceptor(function(string $path) use ($filter) {
+            if (!$filter->test($path)) return null;
+            $code = file_get_contents($path);
             return str_replace('1', '2', $code);
         });
-        $instance->addWhiteList(dirname(__DIR__) . '/data');
         $instance->setUp();
 
         /** @var callable $method */

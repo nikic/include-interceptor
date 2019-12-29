@@ -29,18 +29,14 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase {
     /**
      * @param resource $stream
      * @return callable
-     * @throws \Exception
      */
     protected function loadCode($stream) {
         $file = $this->tempNam('.php');
         file_put_contents($file, $stream);
         try {
-            $result = include $file;
+            return include $file;
+        } finally {
             unlink($file);
-            return $result;
-        } catch (\Exception $e) {
-            unlink($file);
-            throw $e;
         }
     }
 }

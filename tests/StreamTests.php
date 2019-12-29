@@ -12,7 +12,7 @@ use Nikic\IncludeInterceptor\Stream;
 
 class StreamTests extends TestCase {
     protected function fopen($source, $mode) {
-        $interceptor = new Interceptor();
+        $interceptor = $this->createDummyInterceptor();
         Stream::setInterceptor($interceptor);
         $interceptor->wrap();
         $wrapped = fopen($source, $mode);
@@ -21,7 +21,7 @@ class StreamTests extends TestCase {
     }
 
     protected function opendir($source) {
-        $interceptor = new Interceptor();
+        $interceptor = $this->createDummyInterceptor();
         Stream::setInterceptor($interceptor);
         $interceptor->wrap();
         $wrapped = opendir($source);
@@ -82,15 +82,13 @@ class StreamTests extends TestCase {
     public function testLock() {
         $file = $this->tempNam();
         $wrapped = $this->fopen($file, 'r+');
-        if (!flock($wrapped, LOCK_EX)) {
-            $this->fail('Unable to acquire lock');
-        }
+        $this->assertTrue(flock($wrapped, LOCK_EX));
     }
 
     public function testStreamOptions() {
         $file = $this->tempNam();
         $wrapped = $this->fopen($file, 'r+');
-        stream_set_blocking($wrapped, 0);
+        $this->assertTrue(stream_set_blocking($wrapped, 0));
         stream_set_timeout($wrapped, 1, 0);
         stream_set_write_buffer($wrapped, 0);
     }
@@ -126,7 +124,7 @@ class StreamTests extends TestCase {
     }
 
     public function testUrlStat() {
-        $interceptor = new Interceptor();
+        $interceptor = $this->createDummyInterceptor();
         Stream::setInterceptor($interceptor);
         $expected = stat(__FILE__);
         $interceptor->wrap();
@@ -136,7 +134,7 @@ class StreamTests extends TestCase {
     }
 
     public function testMKDir() {
-        $interceptor = new Interceptor();
+        $interceptor = $this->createDummyInterceptor();
         Stream::setInterceptor($interceptor);
         $file = $this->tempNam();
         unlink($file);
@@ -148,7 +146,7 @@ class StreamTests extends TestCase {
     }
 
     public function testRMDir() {
-        $interceptor = new Interceptor();
+        $interceptor = $this->createDummyInterceptor();
         Stream::setInterceptor($interceptor);
         $file = $this->tempNam();
         unlink($file);
@@ -160,7 +158,7 @@ class StreamTests extends TestCase {
     }
 
     public function testRename() {
-        $interceptor = new Interceptor();
+        $interceptor = $this->createDummyInterceptor();
         Stream::setInterceptor($interceptor);
         $file1 = $this->tempNam();
         $file2 = $this->tempNam();
@@ -173,7 +171,7 @@ class StreamTests extends TestCase {
     }
 
     public function testUnlink() {
-        $interceptor = new Interceptor();
+        $interceptor = $this->createDummyInterceptor();
         Stream::setInterceptor($interceptor);
         $file = $this->tempNam();
         $interceptor->wrap();
@@ -183,7 +181,7 @@ class StreamTests extends TestCase {
     }
 
     public function testTouch() {
-        $interceptor = new Interceptor();
+        $interceptor = $this->createDummyInterceptor();
         Stream::setInterceptor($interceptor);
         $file = $this->tempNam();
         $interceptor->wrap();
@@ -192,11 +190,17 @@ class StreamTests extends TestCase {
     }
 
     public function testChmod() {
-        $interceptor = new Interceptor();
+        $interceptor = $this->createDummyInterceptor();
         Stream::setInterceptor($interceptor);
         $file = $this->tempNam();
         $interceptor->wrap();
         $this->assertTrue(chmod($file, 0700));
         $interceptor->unwrap();
+    }
+
+    private function createDummyInterceptor(): Interceptor {
+        return new Interceptor(function(string $path) {
+            return null;
+        });
     }
 }

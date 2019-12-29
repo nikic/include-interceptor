@@ -13,12 +13,34 @@ composer require nikic/include-interceptor
 ```php
 use Nikic\IncludeInterceptor\Interceptor;
 
-$interceptor = new Interceptor();
-$interceptor->addWhiteList(__DIR__ . '/src');
-$interceptor->addHook(function($code) {
-    return str_replace('foo', 'bar', $code);
+$interceptor = new Interceptor(function(string $path) {
+    if (!wantToIntercept($path)) {
+        return null;
+    }
+    return transformCode(file_get_contents($path));
 });
+$interceptor->setUp();
 
+require 'src/foo.php';
+```
+
+For convenience, a `FileFilter` is provided that implements white- and black-listing
+of files and directories:
+
+```php
+use Nikic\IncludeInterceptor\Interceptor;
+use Nikic\IncludeInterceptor\FileFilter;
+
+$fileFilter = FileFilter::createDefault();
+$fileFilter->addWhiteList('');            // Whitelist everything
+$fileFilter->addBlackList('src/');        // Blacklist the src/ directory
+$fileFilter->addWhiteList('src/foo.php'); // But whitelist the src/foo.php file
+$interceptor = new Interceptor(function(string $path) use ($fileFilter) {
+    if (!$fileFilter->test($path)) {
+        return null;
+    }
+    return transformCode(file_get_contents($path));
+});
 $interceptor->setUp();
 
 require 'src/foo.php';
@@ -32,9 +54,5 @@ require 'src/foo.php';
  - A file is white listed if it has a parent folder that is white listed
  without there being a more direct parent folder that is black listed
 - `addHook(callable $hook)`: Register a hook to the intercepter
- - the registered callback will be called for every include which is intercepted
- - The code being included will be passed as the first argument
- - The path being included will be passed as second argument
- - If the hook returns a string the loaded code will be replaced by the return value
 - `setUp()` start intercepting includes
 - `tearDown()` stop intercepting includes

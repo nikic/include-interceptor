@@ -23,6 +23,13 @@ class FileFilter {
      */
     private $extensions = [];
 
+    public static function createDefault(): FileFilter {
+        $filter = new self;
+        $filter->addExtension('php');
+        $filter->addExtension('phar');
+        return $filter;
+    }
+
     public function addWhiteList(string $path): void {
         $this->whiteList[] = rtrim($path, '/');
     }

@@ -7,95 +7,47 @@
 
 namespace Nikic\IncludeInterceptor\Tests;
 
+use Nikic\IncludeInterceptor\FileFilter;
 use Nikic\IncludeInterceptor\Interceptor;
 
 class InterceptorTests extends TestCase {
-
-    public function whiteListProvider() {
-        return [
-            [['/foo'], [], '/foo/bar.php', true],
-            [['/foo/'], [], '/foo/bar.php', true],
-            [[''], ['/foo'], '/foo/bar.php', false],
-            [['/foo/bar'], [], '/foo/bar.php', false],
-            [['/foobar'], [], '/foo/bar.php', false],
-            [['/foo/'], [], '/foo/bar.phar', true],
-            [['/foo/'], [], '/foo/bar.txt', false],
-            [['/foo/'], [], '/foo/php', false]
-        ];
-    }
-
-    /**
-     * @param string[] $whiteList
-     * @param string[] $blacklist
-     * @param string $path
-     * @param bool $expected
-     * @dataProvider whiteListProvider
-     */
-    public function testShouldIntercept($whiteList, $blacklist, $path, $expected) {
-        $instance = new Interceptor();
-        foreach ($whiteList as $folder) {
-            $instance->addWhiteList($folder);
-        }
-        foreach ($blacklist as $folder) {
-            $instance->addBlackList($folder);
-        }
-        $this->assertEquals($expected, $instance->shouldIntercept($path));
-    }
-
-    public function testInterceptNoHooks() {
-        $method = $this->loadWithHooks('addOne.php', []);
-        $this->assertEquals(2, $method(1));
-    }
-
     public function testInterceptNoopHook() {
         $calledCode = '';
-        $method = $this->loadWithHooks('addOne.php', [function ($code) use (&$calledCode) {
+        $method = $this->loadWithHook('addOne.php', function ($path) use (&$calledCode) {
+            $code = file_get_contents($path);
             $calledCode = $code;
-        }]);
+            return $code;
+        });
         $this->assertEquals(2, $method(1));
         $this->assertEquals($calledCode, file_get_contents(__DIR__ . '/data/addOne.php'));
     }
 
     public function testInterceptSingleHook() {
-        $method = $this->loadWithHooks('addOne.php', [function ($code) {
+        $method = $this->loadWithHook('addOne.php', function ($path) {
+            $code = file_get_contents($path);
             return str_replace('1', '2', $code);
-        }]);
+        });
         $this->assertEquals(3, $method(1));
     }
 
-    public function testInterceptMultipleHooks() {
-        $method = $this->loadWithHooks('addOne.php', [function ($code) {
-            return str_replace('1', '2', $code);
-        }, function ($code) {
-            return str_replace('+', '-', $code);
-        }]);
-        $this->assertEquals(-1, $method(1));
-    }
-
     /**
-     * @param string $file
-     * @param callable[] $hooks
      * @return callable
-     * @throws \Exception
      */
-    private function loadWithHooks($file, array $hooks) {
+    private function loadWithHook(string $file, callable $hook) {
         $source = __DIR__ . '/data/' . $file;
-        $instance = new Interceptor();
-
-        foreach ($hooks as $hook) {
-            $instance->addHook($hook);
-        }
-
+        $instance = new Interceptor($hook);
         $stream = $instance->intercept($source);
         return $this->loadCode($stream);
     }
 
     public function testIntercept() {
-        $instance = new Interceptor();
-        $instance->addHook(function ($code) {
+        $filter = FileFilter::createDefault();
+        $filter->addWhiteList(__DIR__ . '/data');
+        $instance = new Interceptor(function (string $path) use ($filter) {
+            if (!$filter->test($path)) return null;
+            $code = file_get_contents($path);
             return str_replace('1', '2', $code);
         });
-        $instance->addWhiteList(__DIR__ . '/data');
         $instance->setUp();
 
         /** @var callable $method */
@@ -108,7 +60,9 @@ class InterceptorTests extends TestCase {
 
     public function testDoubleSetup() {
         $this->expectException(\BadMethodCallException::class);
-        $instance = new Interceptor();
+        $instance = new Interceptor(function(string $path) {
+            return null;
+        });
 
         $instance->setUp();
         try {
@@ -121,11 +75,13 @@ class InterceptorTests extends TestCase {
     }
 
     public function testTearDownSetup() {
-        $instance = new Interceptor();
-        $instance->addHook(function ($code) {
+        $filter = FileFilter::createDefault();
+        $filter->addWhiteList(__DIR__ . '/data');
+        $instance = new Interceptor(function (string $path) use ($filter) {
+            if (!$filter->test($path)) return null;
+            $code = file_get_contents($path);
             return str_replace('1', '2', $code);
         });
-        $instance->addWhiteList(__DIR__ . '/data');
 
         $instance->setUp();
 

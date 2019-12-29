@@ -82,10 +82,13 @@ class Stream {
             $path = $this->fixPath($path, $backtrace);
 
             $including = (bool)($options & self::STREAM_OPEN_FOR_INCLUDE);
-            if ($including && $interceptor->shouldIntercept($path)) {
+            if ($including) {
                 $this->resource = $interceptor->intercept($path);
-                return true;
+                if ($this->resource !== null) {
+                    return true;
+                }
             }
+
             if (isset($this->context)) {
                 $this->resource = fopen($path, $mode, $options, $this->context);
             } else {
