@@ -70,22 +70,27 @@ class Stream {
         $callerDir = dirname($this->getCallingFile($backtrace));
         $pathFromCallerContext = $callerDir . '/' . $path;
         if (file_exists($pathFromCallerContext)) {
-            return realpath($pathFromCallerContext);
+            return $pathFromCallerContext;
         } else {
             return $path;
         }
     }
 
     /**
-     * For file streams the path passed to stream_open() is already the realpath().
      * For phar:// streams the realpath() operation is not supported, so manually
-     * resoled ./ and ../ segments, so that filtering code doesn't have to deal
+     * resolve ./ and ../ segments, so that filtering code doesn't have to deal
      * with it.
+     *
+     * Returns null if the file does not exist.
      */
-    private function realpathPhar(string $path): ?string {
+    private function realpath(string $path): ?string {
+        if (($realPath = realpath($path)) !== false) {
+            return $realPath;
+        }
+
         // Implementation based on https://github.com/UnionOfRAD/lithium/blob/master/core/Libraries.php.
         if (!preg_match('%^phar://(.+\.phar(?:\.gz)?)(.+)%', $path, $pathComponents)) {
-            return $path;
+            return null;
         }
         list(, $relativePath, $pharPath) = $pathComponents;
 
@@ -99,8 +104,8 @@ class Stream {
         }));
 
         if (($resolvedPath = realpath($relativePath)) !== false) {
-            if (file_exists($absolutePath = "phar://{$resolvedPath}{$pharPath}")) {
-                return $absolutePath;
+            if (file_exists($realPath = "phar://{$resolvedPath}{$pharPath}")) {
+                return $realPath;
             }
         }
         return null;
@@ -113,7 +118,7 @@ class Stream {
 
             $including = (bool)($options & self::STREAM_OPEN_FOR_INCLUDE);
             if ($including) {
-                $realPath = $this->realpathPhar($path);
+                $realPath = $this->realpath($path);
                 if ($realPath !== null) {
                     $this->resource = $interceptor->intercept($realPath);
                     if ($this->resource !== null) {

@@ -76,6 +76,20 @@ class InterceptorTests extends TestCase {
         $this->assertEquals(3, $method(1));
     }
 
+    public function testNotExistingFile() {
+        $instance = new Interceptor(function (string $path) {
+            throw new \Exception('Should not be called!');
+        });
+        $instance->setUp();
+
+        try {
+            $this->expectWarning();
+            include __DIR__ . '/data/doesntExist.php';
+        } finally {
+            $instance->tearDown();
+        }
+    }
+
     public function testDoubleSetup() {
         $this->expectException(\BadMethodCallException::class);
         $instance = new Interceptor(function(string $path) {
