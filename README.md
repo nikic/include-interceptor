@@ -1,7 +1,5 @@
 # Include Interceptor
 
-[![Build Status](https://travis-ci.org/nikic/include-interceptor.svg?branch=master)](https://travis-ci.org/nikic/include-interceptor)
-
 Library to intercept PHP includes. A fork of [icewind1991/interceptor](https://github.com/icewind1991/interceptor).
 
 ```
