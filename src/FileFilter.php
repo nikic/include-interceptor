@@ -34,11 +34,11 @@ class FileFilter {
     }
 
     public function addWhiteList(string $path): void {
-        $this->whiteList[] = rtrim($path, '/');
+        $this->whiteList[] = rtrim($this->normalizePath($path), '/');
     }
 
     public function addBlackList(string $path): void {
-        $this->blackList[] = rtrim($path, '/');
+        $this->blackList[] = rtrim($this->normalizePath($path), '/');
     }
 
     public function addExtension(string $extension): void {
@@ -46,6 +46,7 @@ class FileFilter {
     }
 
     public function test(string $path): bool {
+        $path = $this->normalizePath($path);
         if (!$this->isValidExtension($path)) {
             return false;
         }
@@ -102,5 +103,12 @@ class FileFilter {
      */
     private function inDirectory(string $directory, string $path): bool {
         return ($directory === '') || (substr($path, 0, strlen($directory) + 1) === $directory . '/');
+    }
+
+    /*
+     * Normalize to Unix-style path.
+     */
+    private function normalizePath(string $path): string {
+        return str_replace('\\', '/', $path);
     }
 }
