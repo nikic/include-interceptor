@@ -88,9 +88,10 @@ class StreamTests extends TestCase {
     public function testStreamOptions() {
         $file = $this->tempNam();
         $wrapped = $this->fopen($file, 'r+');
-        $this->assertTrue(stream_set_blocking($wrapped, 0));
+        stream_set_blocking($wrapped, 0);
         stream_set_timeout($wrapped, 1, 0);
         stream_set_write_buffer($wrapped, 0);
+        $this->expectNotToPerformAssertions();
     }
 
     public function testReadDir() {
