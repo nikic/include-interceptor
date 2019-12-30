@@ -65,8 +65,9 @@ class StreamTests extends TestCase {
     }
 
     public function testStat() {
+        $unwrapped = fopen(__FILE__, 'r');
         $wrapped = $this->fopen(__FILE__, 'r');
-        $this->assertEquals(stat(__FILE__), fstat($wrapped));
+        $this->assertEquals(fstat($unwrapped), fstat($wrapped));
     }
 
     public function testTruncate() {
