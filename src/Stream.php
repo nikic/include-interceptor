@@ -43,8 +43,11 @@ class Stream {
      */
     private function runUnwrapped($callback) {
         self::$defaultInterceptor->unwrap();
-        $result = $callback(self::$defaultInterceptor);
-        self::$defaultInterceptor->wrap();
+        try {
+            $result = $callback(self::$defaultInterceptor);
+        } finally {
+            self::$defaultInterceptor->wrap();
+        }
         return $result;
     }
 
