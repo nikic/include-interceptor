@@ -1,4 +1,6 @@
-vendor
+vendor/
+.phpunit.result.cache
 .idea
 composer.lock
 clover.xml
+*.swp
