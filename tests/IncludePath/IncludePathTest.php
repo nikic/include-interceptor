@@ -5,12 +5,13 @@
  * http://opensource.org/licenses/MIT
  */
 
-namespace Nikic\IncludeInterceptor\Tests;
+namespace Nikic\IncludeInterceptor\Tests\IncludePath;
 
 use Nikic\IncludeInterceptor\FileFilter;
 use Nikic\IncludeInterceptor\Interceptor;
+use Nikic\IncludeInterceptor\Tests\TestCase;
 
-class IncludePathTests extends TestCase {
+class IncludePathTest extends TestCase {
 
     public function testInterceptFromOtherFolder() {
         $filter = FileFilter::createAllBlacklisted();

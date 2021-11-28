@@ -10,7 +10,7 @@ namespace Nikic\IncludeInterceptor\Tests;
 use Nikic\IncludeInterceptor\Interceptor;
 use Nikic\IncludeInterceptor\Stream;
 
-class StreamTests extends TestCase {
+class StreamTest extends TestCase {
     protected function fopen($source, $mode) {
         $interceptor = $this->createDummyInterceptor();
         Stream::setInterceptor($interceptor);

@@ -9,7 +9,7 @@ namespace Nikic\IncludeInterceptor\Tests;
 
 use Nikic\IncludeInterceptor\FileFilter;
 
-class FileFilterTests extends TestCase {
+class FileFilterTest extends TestCase {
     public function filterProvider() {
         return [
             ['/foo.txt', [], [], [], false],

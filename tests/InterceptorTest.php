@@ -11,7 +11,7 @@ use Nikic\IncludeInterceptor\FileFilter;
 use Nikic\IncludeInterceptor\Interceptor;
 use PHPUnit\Framework\Error\Warning;
 
-class InterceptorTests extends TestCase {
+class InterceptorTest extends TestCase {
     public function testInterceptNoopHook() {
         $calledCode = '';
         $method = $this->loadWithHook('addOne.php', function ($path) use (&$calledCode) {
