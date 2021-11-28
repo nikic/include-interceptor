@@ -32,7 +32,7 @@ class Interceptor {
     /**
      * Open a file and run it through the hook.
      *
-     * @return resource
+     * @return resource|null
      * @internal
      */
     public function intercept(string $path) {

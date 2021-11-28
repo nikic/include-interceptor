@@ -11,7 +11,7 @@ class Stream {
     const STREAM_OPEN_FOR_INCLUDE = 128;
 
     /**
-     * @var Interceptor
+     * @var Interceptor|null
      */
     private static $defaultInterceptor;
 
@@ -28,7 +28,7 @@ class Stream {
     }
 
     /**
-     * @var resource
+     * @var resource|null
      */
     public $context;
 
@@ -171,6 +171,7 @@ class Stream {
         return $this->runUnwrapped(function () use ($path, $flags) {
             if ($flags & STREAM_URL_STAT_QUIET) {
                 set_error_handler(function () {
+                    return false;
                 });
             }
             $result = stat($path);
