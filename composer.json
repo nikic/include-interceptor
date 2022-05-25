@@ -17,8 +17,12 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"Nikic\\IncludeInterceptor\\Tests\\": "tests/",
 			"Nikic\\IncludeInterceptor\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Nikic\\IncludeInterceptor\\Tests\\": "tests/"
 		}
 	}
 }
